@@ -10,6 +10,9 @@ import NotFound from '@/pages/not-found';
 const queryClient = new QueryClient();
 const base = '/gallery/';
 const logo = `${base}808786661_1375152158110907_4090567907087729423_n_1789917920795.jpg`;
+const schoolPhone = '01153634320';
+const schoolEmail = 'alrahmanschool2021@gmail.com';
+const schoolAddress = 'أول طريق كفرالدوار - أبوالمطامير، بجوار بنزينة كتكوت';
 const photos = [
   { src: `${base}796510239_2138796383371340_1246479293422274741_n_1789918025307.jpg`, title: 'نتعلّم معًا في كل مكان', category: 'يومنا في المدرسة' },
   { src: `${base}810421915_1376049704687819_5776937059488477853_n_1789918051985.jpg`, title: 'صحبة تصنع الذكريات', category: 'الحياة المدرسية' },
@@ -53,8 +56,8 @@ function Header() {
     setActive(label); setMenuOpen(false);
   };
   return <header>
-    <div className="topbar"><div className="container-wide topbar-inner">
-      <div className="topbar-contact"><span><Phone size={13} /> ٠١٠٠ ٤٥٦ ٧٨٩٠</span><span><Clock3 size={13} /> السبت — الخميس، ٧:٣٠ ص — ٢:٣٠ م</span></div>
+      <div className="topbar"><div className="container-wide topbar-inner">
+       <div className="topbar-contact"><a href={`tel:${schoolPhone}`}><Phone size={13} /> ٠١١٥٣٦٣٤٣٢٠</a><span><Clock3 size={13} /> السبت — الخميس، ٧:٣٠ ص — ٢:٣٠ م</span></div>
       <span>أهلًا بكم في مدرسة الديب الخاصة</span>
     </div></div>
     <nav className="navbar" aria-label="التنقل الرئيسي"><div className="container-wide nav-inner">
@@ -118,13 +121,13 @@ function ActivitySection() {
 function ContactSection() {
   const [sent, setSent] = useState(false);
   const submit = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); setSent(true); };
-  return <section className="contact-section" id="contact"><div className="container-wide contact-layout"><Reveal className="contact-copy"><div className="section-kicker">نحن قريبون منك</div><h2 className="section-title">لنسأل معًا:<br />هل هي مدرستكم؟</h2><p>يسعدنا أن نجيب عن كل أسئلتكم ونرتب لكم زيارة تشاهدون فيها يومنا عن قرب. اتركوا لنا رسالة، وسنعود إليكم بكل اهتمام.</p><div className="contact-details"><div className="contact-detail"><div className="contact-detail-icon"><Phone size={17} /></div><span>٠١٠٠ ٤٥٦ ٧٨٩٠</span></div><div className="contact-detail"><div className="contact-detail-icon"><Mail size={17} /></div><span>hello@eldeebschool.edu.eg</span></div><div className="contact-detail"><div className="contact-detail-icon"><MapPin size={17} /></div><span>القاهرة الجديدة — مصر</span></div></div></Reveal>
+  return <section className="contact-section" id="contact"><div className="container-wide contact-layout"><Reveal className="contact-copy"><div className="section-kicker">نحن قريبون منك</div><h2 className="section-title">لنسأل معًا:<br />هل هي مدرستكم؟</h2><p>يسعدنا أن نجيب عن كل أسئلتكم ونرتب لكم زيارة تشاهدون فيها يومنا عن قرب. اتركوا لنا رسالة، وسنعود إليكم بكل اهتمام.</p><div className="contact-details"><div className="contact-detail"><div className="contact-detail-icon"><Phone size={17} /></div><a href={`tel:${schoolPhone}`}>٠١١٥٣٦٣٤٣٢٠</a></div><div className="contact-detail"><div className="contact-detail-icon"><Mail size={17} /></div><a href={`mailto:${schoolEmail}`}>{schoolEmail}</a></div><div className="contact-detail"><div className="contact-detail-icon"><MapPin size={17} /></div><span>{schoolAddress}</span></div></div></Reveal>
     <Reveal className="form-card"><h3>نود أن نسمع منكم</h3>{sent ? <div className="success-state" data-testid="status-contact-success"><CircleCheck size={28} /><div>وصلت رسالتكم بنجاح.</div><small>شكرًا لثقتكم — سيتواصل معكم فريق المدرسة قريبًا.</small></div> : <form onSubmit={submit}><div className="form-grid"><div className="field"><label htmlFor="parent-name">الاسم الكريم</label><input id="parent-name" required placeholder="اكتبوا الاسم" data-testid="input-parent-name" /></div><div className="field"><label htmlFor="parent-phone">رقم الهاتف</label><input id="parent-phone" type="tel" required placeholder="01xxxxxxxxx" data-testid="input-parent-phone" /></div><div className="field full"><label htmlFor="parent-message">كيف يمكننا مساعدتكم؟</label><textarea id="parent-message" required placeholder="أخبرونا عن استفساركم أو الوقت المناسب للزيارة..." data-testid="input-parent-message" /></div></div><button className="orange-btn form-submit" type="submit" data-testid="button-submit-contact">إرسال الرسالة <ArrowLeft size={17} /></button></form>}</Reveal>
   </div></section>;
 }
 
 function Footer() {
-  return <footer className="footer"><div className="container-wide"><div className="footer-inner"><div className="footer-brand"><img src={logo} alt="شعار مدرسة الديب" /><span>مدرسة الديب الخاصة</span></div><div className="footer-note">نعلّم اليوم من سيصنعون غدًا.</div></div><div className="footer-bottom"><span>© ٢٠٢٤ مدرسة الديب الخاصة. جميع الحقوق محفوظة.</span><span>بكل فخر، من مجتمعنا إلى مجتمعكم</span></div></div></footer>;
+  return <footer className="footer"><div className="container-wide"><div className="footer-inner"><div className="footer-brand"><img src={logo} alt="شعار مدرسة الديب" /><span>مدرسة الديب الخاصة</span></div><div className="footer-note">نعلّم اليوم من سيصنعون غدًا.</div></div><div className="footer-contact"><a href={`tel:${schoolPhone}`}>٠١١٥٣٦٣٤٣٢٠</a><a href={`mailto:${schoolEmail}`}>{schoolEmail}</a><span>{schoolAddress}</span></div><div className="footer-bottom"><span>© ٢٠٢٤ مدرسة الديب الخاصة. جميع الحقوق محفوظة.</span><span>بكل فخر، من مجتمعنا إلى مجتمعكم</span></div></div></footer>;
 }
 
 function Lightbox({ index, close, next, prev }: { index: number; close: () => void; next: () => void; prev: () => void }) {
