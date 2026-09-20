@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "مدرسة الديب الخاصة"
+description = "موقع تعريفي عربي متجاوب لمدرسة الديب الخاصة يعرض هوية المدرسة، أنشطتها، صور الحياة المدرسية، ورسالة التواصل مع أولياء الأمور."
+version = "1.0.0"
+id = "artifacts/eldeeb-school"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24041
+
+[services.development]
+run = "pnpm --filter @workspace/eldeeb-school run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/eldeeb-school", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/eldeeb-school/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24041"
+BASE_PATH = "/"
