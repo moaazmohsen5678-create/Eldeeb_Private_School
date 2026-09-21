@@ -91,7 +91,6 @@ function PromiseSection() {
       <Reveal className="promise-card"><div><div className="promise-icon"><HeartHandshake size={23} /></div><h3>نحن عائلة</h3><p>علاقات دافئة بين المعلم والطفل والأسرة، أساسها الثقة والاحترام.</p></div><ChevronLeft className="promise-arrow" /></Reveal>
       <Reveal className="promise-card"><div><div className="promise-icon"><Compass size={23} /></div><h3>نتعلم بالحياة</h3><p>الكتاب بداية فقط. نسأل، نتحرك، نشارك، ونحوّل كل تجربة إلى معرفة.</p></div><ChevronLeft className="promise-arrow" /></Reveal>
     </div>
-    <Reveal><div className="stats-strip"><div className="stat"><strong>٢٠+</strong><span>عامًا من الخبرة</span></div><div className="stat"><strong>١:١٢</strong><span>نسبة معلم لكل طالب</span></div><div className="stat"><strong>٤</strong><span>مراحل تعليمية</span></div><div className="stat"><strong>١</strong><span>مجتمع واحد متماسك</span></div></div></Reveal>
   </div></section>;
 }
 
