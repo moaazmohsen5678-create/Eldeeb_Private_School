@@ -1,0 +1,1 @@
+{"buildCommand": "pnpm --filter eldeeb-school build", "outputDirectory": "artifacts/eldeeb-school/dist", "installCommand": "pnpm install"}
