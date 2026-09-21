@@ -62,7 +62,7 @@ function Header() {
     </div></div>
     <nav className="navbar" aria-label="التنقل الرئيسي"><div className="container-wide nav-inner">
       <a href="#home" className="brand" data-testid="link-brand" onClick={() => navigate('home', 'الرئيسية')}>
-        <img src={logo} alt="شعار مدرسة الديب الخاصة" /><div className="brand-copy"><div className="brand-name">مدرسة الديب الخاصة</div><div className="brand-sub">ELDEEB PRIVATE SCHOOL</div></div>
+        <img src={logo} alt="شعار مدرسة الديب الخاصة" /><div className="brand-copy"><div className="brand-name">مدرسة الديب الخاصة</div><div className="brand-sub">نعد قادة المستقبل</div></div>
       </a>
       <div className={`nav-links ${menuOpen ? 'open' : ''}`}>{links.map(([label, id]) =>
         <a href={`#${id}`} key={id} className={active === label ? 'active' : ''} data-testid={`link-nav-${id}`} onClick={() => navigate(id, label)}>{label}</a>)}</div>
@@ -126,7 +126,7 @@ function ContactSection() {
 }
 
 function Footer() {
-  return <footer className="footer"><div className="container-wide"><div className="footer-inner"><div className="footer-brand"><img src={logo} alt="شعار مدرسة الديب" /><span>مدرسة الديب الخاصة</span></div><div className="footer-note">نعلّم اليوم من سيصنعون غدًا.</div></div><div className="footer-contact"><a href={`tel:${schoolPhone}`}>٠١١٥٣٦٣٤٣٢٠</a><a href={`mailto:${schoolEmail}`}>{schoolEmail}</a><span>{schoolAddress}</span></div><div className="footer-bottom"><span>© ٢٠٢٤ مدرسة الديب الخاصة. جميع الحقوق محفوظة.</span><span>بكل فخر، من مجتمعنا إلى مجتمعكم</span></div></div></footer>;
+  return <footer className="footer"><div className="container-wide"><div className="footer-inner"><div className="footer-brand"><img src={logo} alt="شعار مدرسة الديب" /><span>مدرسة الديب الخاصة</span></div><div className="footer-note">نعد قادة المستقبل.</div></div><div className="footer-contact"><a href={`tel:${schoolPhone}`}>٠١١٥٣٦٣٤٣٢٠</a><a href={`mailto:${schoolEmail}`}>{schoolEmail}</a><span>{schoolAddress}</span></div><div className="footer-bottom"><span>© ٢٠٢٤ مدرسة الديب الخاصة. جميع الحقوق محفوظة.</span><span>بكل فخر، من مجتمعنا إلى مجتمعكم</span></div></div></footer>;
 }
 
 function Lightbox({ index, close, next, prev }: { index: number; close: () => void; next: () => void; prev: () => void }) {
@@ -137,7 +137,7 @@ function Lightbox({ index, close, next, prev }: { index: number; close: () => vo
 
 function Home() {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  return <div className="school-shell"><Header /><main><Hero /><PromiseSection /><StorySection /><GallerySection onOpen={setLightboxIndex} /><ActivitySection /><section className="section quote-section"><div className="container-wide quote-inner"><p>«نحن لا نعدكم بطفولة مثالية، بل نعدكم بمكان يجد فيه طفلكم نفسه، ويشعر أنه ينتمي.»</p><span>— فريق مدرسة الديب الخاصة</span></div></section><ContactSection /></main><Footer />{lightboxIndex !== null && <Lightbox index={lightboxIndex} close={() => setLightboxIndex(null)} next={() => setLightboxIndex((lightboxIndex + 1) % photos.length)} prev={() => setLightboxIndex((lightboxIndex - 1 + photos.length) % photos.length)} />}</div>;
+  return <div className="school-shell"><Header /><main><Hero /><PromiseSection /><StorySection /><GallerySection onOpen={setLightboxIndex} /><ActivitySection /><section className="section quote-section"><div className="container-wide quote-inner"><p>«نحن نعدكم بطفولة مثالية يجد فيها طفلكم نفسه، ويشعر أنه ينتمي.»</p><span>— فريق مدرسة الديب الخاصة</span></div></section><ContactSection /></main><Footer />{lightboxIndex !== null && <Lightbox index={lightboxIndex} close={() => setLightboxIndex(null)} next={() => setLightboxIndex((lightboxIndex + 1) % photos.length)} prev={() => setLightboxIndex((lightboxIndex - 1 + photos.length) % photos.length)} />}</div>;
 }
 
 function Router() {
