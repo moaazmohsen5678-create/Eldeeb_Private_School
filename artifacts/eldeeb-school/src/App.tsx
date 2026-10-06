@@ -1,153 +1,282 @@
-import { type FormEvent, type ReactNode, useEffect, useState } from 'react';
-import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
-import { ArrowLeft, Check, ChevronLeft, CircleCheck, Clock3, Compass, HeartHandshake, Mail, MapPin, Menu, Phone, Star, X } from 'lucide-react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ErrorBoundary } from '@/components/error-boundary';
-import { Toaster } from '@/components/ui/toaster';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import NotFound from '@/pages/not-found';
+import { useState } from 'react';
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowUpLeft,
+  BookOpen,
+  Clock3,
+  Heart,
+  Mail,
+  MessageCircle,
+  MapPin,
+  Menu,
+  Phone,
+  Sparkles,
+  X,
+} from 'lucide-react';
 
-const queryClient = new QueryClient();
-const base = '/gallery/';
-const logo = `${base}808786661_1375152158110907_4090567907087729423_n_1789917920795.jpg`;
-const schoolPhone = '01153634320';
-const schoolEmail = 'alrahmanschool2021@gmail.com';
-const schoolAddress = 'أول طريق كفرالدوار - أبوالمطامير، بجوار بنزينة كتكوت';
-const photos = [
-  { src: `${base}796510239_2138796383371340_1246479293422274741_n_1789918025307.jpg`, title: 'نتعلّم معًا في كل مكان', category: 'يومنا في المدرسة' },
-  { src: `${base}810421915_1376049704687819_5776937059488477853_n_1789918051985.jpg`, title: 'صحبة تصنع الذكريات', category: 'الحياة المدرسية' },
-  { src: `${base}797598518_1690161049786181_7611976998453095102_n_1789918096331.jpg`, title: 'نحتفل بكل خطوة', category: 'احتفالاتنا' },
-  { src: `${base}806790497_1685533106324527_3337166698577007043_n_1789918117726.jpg`, title: 'فرحة لا تُنسى', category: 'أنشطة وفعاليات' },
-  { src: `${base}811902383_1120903690618020_8784024791694252300_n_1789918341620.jpg`, title: 'إنجازات نفتخر بها', category: 'نجاحات أبنائنا' },
-  { src: `${base}813698756_1055300637297771_2166166102493822483_n_1789918438016.jpg`, title: 'كل صوت له مكان', category: 'نتشارك النجاح' },
+const asset = (name: string) => `${import.meta.env.BASE_URL}images/${name}`;
+const phone = '01153634320';
+const email = 'alrahmanschool2021@gmail.com';
+const address = 'أول طريق كفرالدوار - أبوالمطامير، بجوار بنزينة كتكوت';
+const mapUrl = 'https://www.google.com/maps/place/%D9%85%D8%AF%D8%B1%D8%B3%D8%A9+%D8%A7%D9%84%D8%B1%D8%AD%D9%85%D9%86+%D8%A7%D9%84%D8%AE%D8%A7%D8%B5%D8%A9%E2%80%AD/@30.9170539,30.1619138,17z/data=!3m1!4b1!4m6!3m5!1s0x14f6093a36059423:0xe2a8519d8b524448!8m2!3d30.9170539!4d30.1619138!16s%2Fg%2F11q1qnp7v5?entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D';
+
+const navItems = [
+  ['عن المدرسة', '#about'],
+  ['يومنا الدراسي', '#day'],
+  ['من قلب المدرسة', '#gallery'],
+  ['زورونا', '#visit'],
 ];
 
-function Reveal({ children, className = '', onClick }: { children: ReactNode; className?: string; onClick?: () => void }) {
-  const [id] = useState(() => `reveal-${Math.random().toString(36).slice(2)}`);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setVisible(true); observer.disconnect(); }
-    }, { threshold: 0.12 });
-    const element = document.querySelector(`[data-reveal-id="${id}"]`);
-    if (element) observer.observe(element);
-    return () => observer.disconnect();
-  }, []);
-  return <div data-reveal-id={id} className={`reveal ${visible ? 'visible' : ''} ${className}`} onClick={onClick}>{children}</div>;
-}
-
-function Header() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [active, setActive] = useState('الرئيسية');
-  const links = [
-    ['الرئيسية', 'home'], ['عن المدرسة', 'about'], ['الحياة المدرسية', 'life'], ['الأنشطة', 'activities'], ['ذكرياتنا', 'gallery'],
-  ];
-  useEffect(() => {
-    const onScroll = () => {
-      const sections = links.map(([, id]) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
-      const current = sections.find((section) => window.scrollY >= section.offsetTop - 130);
-      if (current) setActive(links.find(([, id]) => id === current.id)?.[0] ?? 'الرئيسية');
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  });
-  const navigate = (id: string, label: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-    setActive(label); setMenuOpen(false);
-  };
-  return <header>
-      <div className="topbar"><div className="container-wide topbar-inner">
-       <div className="topbar-contact"><a href={`tel:${schoolPhone}`}><Phone size={13} /> ٠١١٥٣٦٣٤٣٢٠</a><span><Clock3 size={13} /> السبت — الخميس، ٧:٣٠ ص — ٢:٣٠ م</span></div>
-      <span>أهلًا بكم في مدرسة الديب الخاصة</span>
-    </div></div>
-    <nav className="navbar" aria-label="التنقل الرئيسي"><div className="container-wide nav-inner">
-      <a href="#home" className="brand" data-testid="link-brand" onClick={() => navigate('home', 'الرئيسية')}>
-        <img src={logo} alt="شعار مدرسة الديب الخاصة" /><div className="brand-copy"><div className="brand-name">مدرسة الديب الخاصة</div><div className="brand-sub">نعد قادة المستقبل</div></div>
-      </a>
-      <div className={`nav-links ${menuOpen ? 'open' : ''}`}>{links.map(([label, id]) =>
-        <a href={`#${id}`} key={id} className={active === label ? 'active' : ''} data-testid={`link-nav-${id}`} onClick={() => navigate(id, label)}>{label}</a>)}</div>
-      <button className="nav-cta" data-testid="button-nav-contact" onClick={() => navigate('contact', 'تواصل معنا')}>تواصل معنا</button>
-      <button className="menu-toggle" aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'} aria-expanded={menuOpen} data-testid="button-mobile-menu" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
-    </div></nav>
-  </header>;
-}
-
-function Hero() {
-  return <section className="hero" id="home"><div className="container-wide hero-grid">
-    <Reveal className="hero-copy"><div className="eyebrow">من هنا تبدأ الحكاية</div>
-      <h1>مكان يكبر فيه<br /><strong>الشغف.</strong> ويزدهر فيه الأثر.</h1>
-      <p className="hero-lede">في مدرسة الديب الخاصة، لا نكتفي بأن يتعلم أبناؤنا. نمنحهم مساحة ليسألوا، ويجربوا، ويجدوا صوتهم بين أصدقاء يشبهونهم.</p>
-      <div className="hero-actions"><button className="orange-btn" data-testid="button-hero-contact" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>اكتشف المدرسة <ArrowLeft size={17} /></button><a className="ghost-btn" href="#gallery" data-testid="link-hero-gallery">شاهد يومنا <ChevronLeft size={16} /></a></div>
-      <div className="hero-note"><Star size={17} fill="currentColor" color="hsl(14 85% 55%)" /><span>بيئة آمنة، تعليم طموح، و<strong>انتماء حقيقي</strong></span></div>
-    </Reveal>
-    <Reveal className="hero-visual"><img className="hero-photo" src={photos[0].src} alt="طلاب مدرسة الديب في نشاط جماعي داخل المدرسة" /><div className="sunburst" aria-hidden="true" /><div className="hero-photo-badge"><img src={logo} alt="" /><p>كل يوم فرصة جديدة<br />لنكتشف شيئًا عن أنفسنا</p></div></Reveal>
-  </div></section>;
-}
-
-function PromiseSection() {
-  return <section className="section" id="about"><div className="container-wide">
-    <Reveal className="section-head"><div><div className="section-kicker">لماذا الديب؟</div><h2 className="section-title">المدرسة التي ترى<br />ما وراء الدرجات.</h2></div><p className="section-intro">نصنع تعليمًا يحترم فضول الطفل، ويؤمن بقدرته على صنع فرق حقيقي — في فصله، وفي مدرسته، وفي العالم من حوله.</p></Reveal>
-    <div className="promise-grid"><Reveal className="promise-main"><span className="number">01 / وعدنا</span><h3>طفل واثق يعرف أن صوته مهم.</h3><p>نستمع جيدًا، نشجع المحاولة، ونحتفل بالتقدم الصغير قبل الإنجاز الكبير.</p></Reveal>
-      <Reveal className="promise-card"><div><div className="promise-icon"><HeartHandshake size={23} /></div><h3>نحن عائلة</h3><p>علاقات دافئة بين المعلم والطفل والأسرة، أساسها الثقة والاحترام.</p></div><ChevronLeft className="promise-arrow" /></Reveal>
-      <Reveal className="promise-card"><div><div className="promise-icon"><Compass size={23} /></div><h3>نتعلم بالحياة</h3><p>الكتاب بداية فقط. نسأل، نتحرك، نشارك، ونحوّل كل تجربة إلى معرفة.</p></div><ChevronLeft className="promise-arrow" /></Reveal>
-    </div>
-  </div></section>;
-}
-
-function StorySection() {
-  return <section className="section section-tint" id="life"><div className="container-wide story-grid">
-    <Reveal className="story-copy"><div className="section-kicker">يوم عادي؟ ليس تمامًا</div><h2 className="section-title">كل يوم يترك<br />حكاية جديدة.</h2><p>من نقاش يبدأ في الفصل إلى مباراة تجمع أصدقاء جدد، نترك لأبنائنا وقتًا ليعيشوا المدرسة بكل تفاصيلها. هنا تتشكل الذكريات التي ترافقهم طويلًا.</p><ul className="story-list"><li><Check size={18} /> فصول تفاعلية تشجع السؤال</li><li><Check size={18} /> أنشطة رياضية وفنية طوال العام</li><li><Check size={18} /> احتفالات تصنعها أيادي أبنائنا</li></ul></Reveal>
-    <Reveal className="story-art"><img src={photos[1].src} alt="طلاب يجتمعون حول مائدة في نشاط مدرسي" /><div className="story-tag">نحتفل باللحظة التي يقول فيها الطفل: أنا أستطيع.</div></Reveal>
-  </div></section>;
-}
-
-function GallerySection({ onOpen }: { onOpen: (index: number) => void }) {
-  return <section className="section" id="gallery"><div className="container-wide">
-    <Reveal className="section-head"><div><div className="section-kicker">من ألبومنا</div><h2 className="section-title">صور تشبهنا.</h2></div><p className="section-intro">هذه ليست لقطات مرتبة بعناية. هذه لحظات حقيقية من أيام مليئة بالحركة، والضحك، والاكتشاف.</p></Reveal>
-    <div className="gallery-wrap"><Reveal className="gallery-lead" onClick={() => onOpen(0)}><img src={photos[0].src} alt={photos[0].title} /><div className="gallery-overlay"><h3>{photos[0].title}</h3><p>{photos[0].category}</p></div></Reveal>
-      <div className="gallery-grid">{photos.slice(1).map((photo, index) => <Reveal key={photo.src} className="gallery-item" onClick={() => onOpen(index + 1)}><img src={photo.src} alt={photo.title} /></Reveal>)}</div>
-    </div><div className="gallery-caption"><span /> اضغط على أي صورة لتعيش اللحظة بحجم أكبر</div>
-  </div></section>;
-}
-
-function ActivitySection() {
-  const activities = [['٠١', 'فنون ومسرح', 'نمنح الخيال مساحة واسعة ليتحول إلى لون، وصوت، ومشهد لا يُنسى.'], ['٠٢', 'رياضة وحركة', 'طاقة الفريق، متعة اللعب، وثقة تنمو مع كل تمريرة وسباق.'], ['٠٣', 'اكتشاف وقيادة', 'مشروعات وفعاليات يتولى أبناؤنا فكرتها وتنظيمها والاحتفال بها.']];
-  return <section className="section section-tint" id="activities"><div className="container-wide"><Reveal className="section-head"><div><div className="section-kicker">مساحتك لتجرب كل شيء</div><h2 className="section-title">شغفك له<br />مكان هنا.</h2></div><p className="section-intro">نؤمن أن المدرسة لا تُقاس بما يحدث داخل الفصل فقط. لذلك نفتح الأبواب لكل موهبة ولكل طريقة مختلفة في التعبير.</p></Reveal>
-    <div className="activities-grid">{activities.map(([number, title, text]) => <Reveal className="activity-card" key={number}><div className="activity-no">{number}</div><h3>{title}</h3><p>{text}</p></Reveal>)}</div>
-  </div></section>;
-}
-
-function ContactSection() {
-  const [sent, setSent] = useState(false);
-  const submit = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); setSent(true); };
-  return <section className="contact-section" id="contact"><div className="container-wide contact-layout"><Reveal className="contact-copy"><div className="section-kicker">نحن قريبون منك</div><h2 className="section-title">لنسأل معًا:<br />هل هي مدرستكم؟</h2><p>يسعدنا أن نجيب عن كل أسئلتكم ونرتب لكم زيارة تشاهدون فيها يومنا عن قرب. اتركوا لنا رسالة، وسنعود إليكم بكل اهتمام.</p><div className="contact-details"><div className="contact-detail"><div className="contact-detail-icon"><Phone size={17} /></div><a href={`tel:${schoolPhone}`}>٠١١٥٣٦٣٤٣٢٠</a></div><div className="contact-detail"><div className="contact-detail-icon"><Mail size={17} /></div><a href={`mailto:${schoolEmail}`}>{schoolEmail}</a></div><div className="contact-detail"><div className="contact-detail-icon"><MapPin size={17} /></div><span>{schoolAddress}</span></div></div></Reveal>
-    <Reveal className="form-card"><h3>نود أن نسمع منكم</h3>{sent ? <div className="success-state" data-testid="status-contact-success"><CircleCheck size={28} /><div>وصلت رسالتكم بنجاح.</div><small>شكرًا لثقتكم — سيتواصل معكم فريق المدرسة قريبًا.</small></div> : <form onSubmit={submit}><div className="form-grid"><div className="field"><label htmlFor="parent-name">الاسم الكريم</label><input id="parent-name" required placeholder="اكتبوا الاسم" data-testid="input-parent-name" /></div><div className="field"><label htmlFor="parent-phone">رقم الهاتف</label><input id="parent-phone" type="tel" required placeholder="01xxxxxxxxx" data-testid="input-parent-phone" /></div><div className="field full"><label htmlFor="parent-message">كيف يمكننا مساعدتكم؟</label><textarea id="parent-message" required placeholder="أخبرونا عن استفساركم أو الوقت المناسب للزيارة..." data-testid="input-parent-message" /></div></div><button className="orange-btn form-submit" type="submit" data-testid="button-submit-contact">إرسال الرسالة <ArrowLeft size={17} /></button></form>}</Reveal>
-  </div></section>;
-}
-
-function Footer() {
-  return <footer className="footer"><div className="container-wide"><div className="footer-inner"><div className="footer-brand"><img src={logo} alt="شعار مدرسة الديب" /><span>مدرسة الديب الخاصة</span></div><div className="footer-note">نعد قادة المستقبل.</div></div><div className="footer-contact"><a href={`tel:${schoolPhone}`}>٠١١٥٣٦٣٤٣٢٠</a><a href={`mailto:${schoolEmail}`}>{schoolEmail}</a><span>{schoolAddress}</span></div><div className="footer-bottom"><span>© ٢٠٢٤ مدرسة الديب الخاصة. جميع الحقوق محفوظة.</span><span>بكل فخر، من مجتمعنا إلى مجتمعكم</span></div></div></footer>;
-}
-
-function Lightbox({ index, close, next, prev }: { index: number; close: () => void; next: () => void; prev: () => void }) {
-  useEffect(() => { const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') close(); if (event.key === 'ArrowLeft') next(); if (event.key === 'ArrowRight') prev(); }; window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey); }, [close, next, prev]);
-  const photo = photos[index];
-  return <div className="lightbox" role="dialog" aria-modal="true" aria-label="عرض الصورة" onClick={close}><div className="lightbox-content" onClick={(event) => event.stopPropagation()}><button className="lightbox-close" aria-label="إغلاق الصورة" data-testid="button-close-lightbox" onClick={close}><X size={24} /></button><img src={photo.src} alt={photo.title} /><div className="lightbox-label">{photo.title} — {photo.category}</div><button className="lightbox-prev ghost-btn" data-testid="button-next-lightbox" style={{ position:'absolute', right:'-50px', top:'50%', color:'#fff', borderColor:'rgba(255,255,255,.35)' }} onClick={next} aria-label="الصورة التالية"><ChevronLeft /></button><button className="lightbox-next ghost-btn" data-testid="button-previous-lightbox" style={{ position:'absolute', left:'-50px', top:'50%', color:'#fff', borderColor:'rgba(255,255,255,.35)' }} onClick={prev} aria-label="الصورة السابقة"><ChevronLeft style={{ transform:'rotate(180deg)' }} /></button></div></div>;
-}
-
-function Home() {
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  return <div className="school-shell"><Header /><main><Hero /><PromiseSection /><StorySection /><GallerySection onOpen={setLightboxIndex} /><ActivitySection /><section className="section quote-section"><div className="container-wide quote-inner"><p>«نحن نعدكم بطفولة مثالية يجد فيها طفلكم نفسه، ويشعر أنه ينتمي.»</p><span>— فريق مدرسة الديب الخاصة</span></div></section><ContactSection /></main><Footer />{lightboxIndex !== null && <Lightbox index={lightboxIndex} close={() => setLightboxIndex(null)} next={() => setLightboxIndex((lightboxIndex + 1) % photos.length)} prev={() => setLightboxIndex((lightboxIndex - 1 + photos.length) % photos.length)} />}</div>;
-}
-
-function Router() {
-  return <RoutedErrorBoundary><Switch><Route path="/" component={Home} /><Route component={NotFound} /></Switch></RoutedErrorBoundary>;
-}
-function RoutedErrorBoundary({ children }: { children: ReactNode }) {
-  const [location] = useLocation();
-  return <ErrorBoundary resetKey={location}>{children}</ErrorBoundary>;
-}
 function App() {
-  return <QueryClientProvider client={queryClient}><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}><Router /></WouterRouter><Toaster /></TooltipProvider></QueryClientProvider>;
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = () => setMenuOpen(false);
+
+  return (
+    <main dir="rtl">
+      <div className="topline">
+        <div className="topline-inner">
+          <span><MapPin size={14} /> كفرالدوار · أبوالمطامير</span>
+            <a href={`tel:${phone}`} dir="ltr" data-testid="link-phone-top"><Phone size={14} /> {phone}</a>
+          <span className="topline-note">أهلًا بكم في مدرسة الديب الخاصة</span>
+        </div>
+      </div>
+
+      <header className="site-header">
+        <div className="nav-wrap">
+          <a className="brand" href="#home" aria-label="مدرسة الديب الخاصة — الرئيسية">
+            <img src={asset('school-logo.jpg')} alt="شعار مدرسة الديب الخاصة" />
+            <span className="brand-copy">
+              <strong>مدرسة الديب الخاصة</strong>
+              <small>ELDEEB PRIVATE SCHOOL</small>
+            </span>
+          </a>
+          <button
+            type="button"
+            className="menu-toggle"
+            aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(!menuOpen)}
+            data-testid="button-menu-toggle"
+          >
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+          <nav className={`nav-links${menuOpen ? ' nav-open' : ''}`} aria-label="التنقل الرئيسي">
+            {navItems.map(([label, href]) => (
+              <a key={href} href={href} onClick={closeMenu} data-testid={`link-nav-${href.slice(1)}`}>{label}</a>
+            ))}
+            <a className="nav-cta" href={`tel:${phone}`} onClick={closeMenu} data-testid="link-contact-nav">
+              تواصلوا معنا <ArrowLeft size={15} />
+            </a>
+          </nav>
+        </div>
+      </header>
+
+      <section className="hero" id="home">
+        <div className="hero-pattern" aria-hidden="true" />
+        <div className="hero-inner">
+          <div className="hero-copy">
+            <div className="eyebrow"><span /> مدرسة الديب الخاصة</div>
+            <h1>هنا يكبر الحلم،<br /><em>خطوةً خطوة.</em></h1>
+            <p className="hero-intro">
+              مساحة تجمع بين التعلّم والأنشطة واللحظات الجميلة — في قلب مجتمعنا، وبقربكم.
+            </p>
+            <div className="hero-actions">
+              <a className="button button-primary" href="#visit" data-testid="link-visit">
+                اكتشفوا المدرسة <ArrowLeft size={17} />
+              </a>
+              <a className="text-link" href={`tel:${phone}`} data-testid="link-phone-hero">
+                <span className="call-icon"><Phone size={16} /></span>
+                اسألونا مباشرة
+              </a>
+            </div>
+            <div className="hero-note">
+              <span className="note-mark"><Heart size={17} /></span>
+              <span>مدرسة قريبة من البيت،<br />ومن قلب الحكاية.</span>
+            </div>
+          </div>
+          <div className="hero-visual">
+            <div className="hero-photo-frame">
+              <img src={asset('school-yard.jpg')} alt="طلاب مدرسة الديب في لقاء جماعي بساحة المدرسة" />
+              <div className="photo-caption">
+                <span className="caption-dot" />
+                <span>نتعلّم معًا، ونكبر معًا</span>
+              </div>
+            </div>
+            <div className="hero-seal">
+              <img src={asset('school-logo.jpg')} alt="" />
+              <span>مدرسة<br /><b>الديب الخاصة</b></span>
+            </div>
+            <div className="hero-index" aria-hidden="true">01 <i /> 04</div>
+            <div className="sun-shape" aria-hidden="true" />
+          </div>
+        </div>
+            <a className="scroll-cue" href="#about" data-testid="link-scroll-about"><span>تابعوا الحكاية</span><ArrowDown size={15} /></a>
+      </section>
+
+      <section className="welcome-section section-pad" id="about">
+        <div className="welcome-grid content-width">
+          <div className="section-heading">
+            <span className="kicker">أهلًا بكم في بيتنا</span>
+            <h2>مكان للتعلّم،<br /><span>ومساحة للانتماء.</span></h2>
+          </div>
+          <div className="welcome-text">
+            <p className="lead">
+              في مدرسة الديب الخاصة، نؤمن أن أيام المدرسة ليست دروسًا فقط؛ إنها صداقات، واكتشافات، وذكريات تصنعها التفاصيل الصغيرة.
+            </p>
+            <p>
+              من الفصل إلى ساحة المدرسة، نشارككم لمحات من يومنا كما هو — مجتمع يتعلّم ويحتفل ويجتمع.
+            </p>
+            <a className="underlined-link" href="#gallery">شاهدوا لحظات من مدرستنا <ArrowLeft size={16} /></a>
+          </div>
+        </div>
+        <div className="welcome-ribbon" aria-hidden="true">
+          <span>مدرسة الديب الخاصة</span><b>•</b><span>ELDEEB PRIVATE SCHOOL</span><b>•</b><span>مدرسة الديب الخاصة</span>
+        </div>
+      </section>
+
+      <section className="school-day section-pad" id="day">
+        <div className="day-grid content-width">
+          <div className="day-photo">
+            <img src={asset('classroom.jpg')} alt="طلاب داخل فصل مدرسي يشاركون في نشاط تعليمي" loading="lazy" />
+            <span className="image-tag"><BookOpen size={15} /> من داخل الفصل</span>
+            <span className="day-photo-number">02</span>
+          </div>
+          <div className="day-copy">
+            <span className="kicker">تفاصيل تصنع يومًا جميلًا</span>
+            <h2>كل يوم يحمل<br /><em>فرصة جديدة.</em></h2>
+            <p>في الفصل، نتشارك وقت التعلّم ونحتفي بالمحاولة. وفي كل يوم، مساحة لأن يشارك كل طالب حضوره وصوته.</p>
+            <div className="day-points">
+              <div className="day-point">
+                <span className="point-icon orange"><BookOpen size={20} /></span>
+                <div><strong>وقت للتعلّم</strong><small>لحظات صفية نشاركها معًا.</small></div>
+              </div>
+              <div className="day-point">
+                <span className="point-icon navy"><Sparkles size={20} /></span>
+                <div><strong>مساحة للاكتشاف</strong><small>أنشطة ومناسبات من حياة المدرسة.</small></div>
+              </div>
+              <div className="day-point">
+                <span className="point-icon green"><Heart size={20} /></span>
+                <div><strong>روح الجماعة</strong><small>أصدقاء، معلمون، وعائلة واحدة.</small></div>
+              </div>
+            </div>
+            <a className="button button-outline" href="#gallery">شاهدوا يومنا <ArrowLeft size={16} /></a>
+          </div>
+        </div>
+      </section>
+
+      <section className="moments section-pad" id="gallery">
+        <div className="content-width">
+          <div className="moments-head">
+            <div>
+              <span className="kicker">وجوه ولحظات من مدرستنا</span>
+              <h2>الحكاية في <em>تفاصيلها.</em></h2>
+            </div>
+            <p>من الفصل والساحة إلى أيام الفرح —<br />هذه لمحات من حياة مدرسة الديب.</p>
+          </div>
+          <div className="photo-grid">
+            <figure className="photo-card photo-tall">
+               <img src={asset('school-life.jpg')} alt="طلاب يرفعون أوراقهم في فصل دراسي" loading="lazy" data-testid="img-gallery-school-life" />
+              <figcaption><span>لحظة من الفصل</span><ArrowUpLeft size={17} /></figcaption>
+            </figure>
+            <figure className="photo-card">
+               <img src={asset('activities.jpg')} alt="طلاب يشاركون في يوم أنشطة واحتفال مدرسي" loading="lazy" data-testid="img-gallery-activities" />
+              <figcaption><span>يوم مليء بالحيوية</span><ArrowUpLeft size={17} /></figcaption>
+            </figure>
+            <figure className="photo-card photo-wide">
+               <img src={asset('school-event.jpg')} alt="طلاب وأسر يحتفلون عند مدخل المدرسة" loading="lazy" data-testid="img-gallery-event" />
+              <figcaption><span>نحتفل معًا</span><ArrowUpLeft size={17} /></figcaption>
+            </figure>
+            <figure className="photo-card">
+               <img src={asset('community.jpg')} alt="طلاب يستمتعون بعرض احتفالي في ساحة المدرسة" loading="lazy" data-testid="img-gallery-community" />
+              <figcaption><span>وقت يجمعنا</span><ArrowUpLeft size={17} /></figcaption>
+            </figure>
+            <figure className="photo-card photo-last">
+               <img src={asset('school-yard.jpg')} alt="لقاء طلابي في ساحة المدرسة" loading="lazy" data-testid="img-gallery-yard" />
+              <figcaption><span>في ساحة المدرسة</span><ArrowUpLeft size={17} /></figcaption>
+            </figure>
+          </div>
+          <div className="gallery-foot"><span>صور من لحظاتنا المدرسية</span><i /></div>
+        </div>
+      </section>
+
+      <section className="together-section">
+        <div className="together-image">
+          <img src={asset('school-event.jpg')} alt="احتفال مجتمعي أمام المدرسة" loading="lazy" />
+        </div>
+        <div className="together-copy">
+          <span className="kicker">مجتمعنا هو الحكاية</span>
+          <h2>كل وجه هنا<br />له مكان.</h2>
+          <p>المدرسة تكبر بأهلها. نعتز باللحظات التي تجمع طلابنا وأسرهم ومعلميهم، وتصنع إحساسًا حقيقيًا بالانتماء.</p>
+          <a href={`https://wa.me/20${phone.slice(1)}`} className="button button-cream" target="_blank" rel="noreferrer">
+            ابدأوا الحديث معنا <ArrowLeft size={16} />
+          </a>
+          <span className="together-stamp">قريبون<br />منكم</span>
+        </div>
+      </section>
+
+      <section className="visit-section section-pad" id="visit">
+        <div className="content-width">
+          <div className="visit-intro">
+            <span className="kicker">خطوتكم التالية</span>
+            <h2>يسعدنا أن <em>نسمع منكم.</em></h2>
+            <p>للاستفسار أو لزيارتنا، تواصلوا معنا بالطريقة الأنسب لكم.</p>
+          </div>
+          <div className="contact-layout">
+            <div className="contact-details">
+              <a className="contact-card" href={`tel:${phone}`} data-testid="link-contact-phone">
+                <span className="contact-icon"><Phone size={21} /></span>
+                <span><small>اتصال مباشر</small><b dir="ltr">{phone}</b></span>
+                <ArrowLeft className="contact-arrow" size={17} />
+              </a>
+              <a className="contact-card" href={`mailto:${email}`} data-testid="link-contact-email">
+                <span className="contact-icon"><Mail size={21} /></span>
+                <span><small>راسلونا عبر البريد</small><b dir="ltr">{email}</b></span>
+                <ArrowLeft className="contact-arrow" size={17} />
+              </a>
+              <a className="contact-card" href={`https://wa.me/20${phone.slice(1)}`} target="_blank" rel="noreferrer" data-testid="link-contact-whatsapp">
+                <span className="contact-icon"><MessageCircle size={21} /></span>
+                <span><small>تواصل عبر واتساب</small><b>نحن بانتظار رسالتكم</b></span>
+                <ArrowLeft className="contact-arrow" size={17} />
+              </a>
+            </div>
+            <div className="location-card">
+              <div className="location-top">
+                <span className="location-icon"><MapPin size={22} /></span>
+                <span className="location-label">موقعنا</span>
+                <Clock3 size={17} className="location-clock" />
+              </div>
+              <h3>على أول الطريق،<br />وقريبون منكم.</h3>
+              <p>{address}</p>
+              <a href={mapUrl} target="_blank" rel="noreferrer" className="button button-primary location-button" data-testid="link-directions">
+                افتحوا الموقع على الخريطة <ArrowLeft size={16} />
+              </a>
+              <span className="location-coords" aria-hidden="true">كفرالدوار&nbsp; / &nbsp;أبوالمطامير</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="closing">
+        <div className="closing-content">
+          <img src={asset('school-logo.jpg')} alt="شعار مدرسة الديب الخاصة" loading="lazy" />
+          <div>
+            <span>مدرسة الديب الخاصة</span>
+            <h2>نتطلّع للقائكم.</h2>
+          </div>
+          <a className="closing-phone" href={`tel:${phone}`} dir="ltr"><Phone size={16} /> {phone}</a>
+        </div>
+      </section>
+
+      <footer className="footer">
+        <div className="footer-inner content-width">
+          <span>© مدرسة الديب الخاصة</span>
+          <span>أول طريق كفرالدوار - أبوالمطامير، بجوار بنزينة كتكوت</span>
+           <a href="#home" data-testid="link-back-to-top">العودة إلى الأعلى ↑</a>
+        </div>
+      </footer>
+    </main>
+  );
 }
+
 export default App;
