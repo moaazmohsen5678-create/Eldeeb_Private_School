@@ -29,20 +29,19 @@ BASE_PATH=/eldeeb-school/ PORT=4173 pnpm --filter @workspace/eldeeb-school run b
 ارفع محتويات `artifacts/eldeeb-school/dist/public` إلى الاستضافة. عند النشر على
 النطاق الرئيسي بدل مسار مستودع، استخدم `BASE_PATH=/`.
 
-## الرفع إلى GitHub
+## النشر على GitHub Pages
 
-ارفع مجلد المشروع كاملًا إلى مستودع GitHub حتى تظل إعدادات pnpm وملفات مساحة
-العمل متاحة للبناء:
+الموقع المنشور يُقدَّم من مجلد `docs` على فرع `main`. لتحديثه بعد تعديل ملفات
+التطبيق، ابنِ النسخة الثابتة وانسخ ناتج البناء إلى `docs`:
 
 ```bash
-git init
-git add .
-git commit -m "Add school website"
-git branch -M main
-git remote add origin https://github.com/USERNAME/REPOSITORY.git
-git push -u origin main
+BASE_PATH=/Eldeeb_Private_School/ PORT=4173 pnpm --filter @workspace/eldeeb-school run build
+mkdir -p docs
+cp -R artifacts/eldeeb-school/dist/public/. docs/
+git add docs
+git commit -m "Publish school website"
+git push origin main
 ```
 
-يوجد سير عمل GitHub Actions في `.github/workflows/deploy-school.yml` لبناء الموقع
-ونشره على GitHub Pages تلقائيًا عند الدفع إلى `main`. فعّل GitHub Pages من
-إعدادات المستودع واجعل مصدر النشر **GitHub Actions**.
+إعداد Pages الحالي هو النشر من الفرع `main` والمجلد `/docs`. غيّر قيمة
+`BASE_PATH` إذا كان اسم المستودع مختلفًا.
